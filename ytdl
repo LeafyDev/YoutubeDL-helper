@@ -1,0 +1,192 @@
+#!/bin/bash
+
+# Init
+command -v youtube-dl >/dev/null 2>&1 || { echo >&2 "I require youtube-dl but it's not installed. Aborting."; exit 1; }
+bold=$(tput bold)
+normal=$(tput sgr0)
+red=$(tput setf 4)
+
+# Check command args
+valid="false"
+until [ "$valid" = "true" ];
+do
+	if [ ! -z "$1" ];
+	then
+		# Using arguments to define downloads
+		id="$1"
+		check=$(youtube-dl -e --default-search auto "$id")
+		if [ "$check" = "Hypothetical Scenarios Test with Jim | Zoella" ]
+		then
+			echo "${red}Invalid ID.${normal}"
+			exit 1;
+		else
+			echo "$check"
+			echo -e "\n${bold}Using ID '$id' for downloads.${normal}"
+			sleep 1
+			valid="true"
+		fi
+	else
+		# Using custom ID
+		echo -e "\n${bold}Enter video or playlist ID: ${normal}"
+		read id
+		if [ "$id" = "" ];
+		then
+			echo -e "${red}No ID given.${normal}"
+			valid="false"
+		else
+			check=$(youtube-dl -e --default-search auto "$id")
+			if [ "$check" = "Hypothetical Scenarios Test with Jim | Zoella" ]
+			then
+				echo "${red}Invalid ID.${normal}"
+				exit 1;
+			else
+				echo "$check"
+				echo -e "\n${bold}Using ID '$id' for downloads.${normal}"
+				sleep 1
+				valid="true"
+			fi
+		fi
+	fi
+done
+
+# Type
+valid="false"
+until [ "$valid" = "true" ];
+do
+	echo -e "\n${bold}Audio or Video? (A/V)${normal}"
+	read type
+	
+	if [ "$type" = "A" ];
+	then
+		echo -e "\n${bold}Audio chosen.${normal}"
+		sleep 1
+		valid="true"
+	elif [ "$type" = "V" ];
+	then
+		echo -e "\n${bold}Video chosen.${normal}"
+		sleep 1
+		valid="true"
+	else
+		echo -e "\n${red}Invalid answer.${normal}"
+		valid="false"
+	fi
+done
+
+# Audio
+if [ "$type" = "A" ];
+then
+	dir=$(pwd)
+	echo -e "${bold}Enter directory to download to: (Enter for current)${normal} "
+	read directory
+	if [ "$directory" = "" ];
+	then
+		# Current directory
+		echo "${bold}Using directory '$dir' for downloads.${normal}"
+		sleep 1
+		ready="true"
+	else
+		if [ -d "$directory" ];
+		then
+			# Directory exists
+			echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
+			sleep 1
+			cd "$directory"
+			ready="true"
+		else
+			valid="false"
+			until [ "$valid" = "true" ];
+			do
+				echo -e "\n${bold}Directory '$directory' does not exist. Would you me to create it? (Y/N)${normal} "
+				read mkdir
+				if [ "$mkdir" = "Y" ];
+				then
+					# Creating directory
+					mkdir "$directory"
+					echo "${bold}Folder created.${normal}"
+					sleep 1
+					echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
+					cd "$directory"
+					ready="true"
+					valid="true"
+				elif [ "$mkdir" = "N" ];
+				then
+					# Creating directory denied
+					echo -e "\n${bold}Not creating directory script cannot continue. Aborting.${normal}"
+					sleep 1
+					exit 1;
+				else
+					echo -e "\n${red}Invalid answer.${normal}"
+				fi
+			done
+		fi
+	fi
+fi
+
+# Video
+if [ "$type" = "V" ];
+then
+	dir=$(pwd)
+	echo -e "${bold}Enter directory to download to: (Enter for current)${normal} "
+	read directory
+	if [ "$directory" = "" ];
+	then
+		# Current directory
+		echo "${bold}Using directory '$dir' for downloads.${normal}"
+		sleep 1
+		ready="true"
+	else
+		if [ -d "$directory" ];
+		then
+			# Directory exists
+			echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
+			sleep 1
+			cd "$directory"
+			ready="true"
+		else
+			valid="false"
+			until [ "$valid" = "true" ];
+			do
+				echo -e "\n${bold}Directory '$directory' does not exist. Would you me to create it? (Y/N)${normal} "
+				read mkdir
+				if [ "$mkdir" = "Y" ];
+				then
+					# Creating directory
+					mkdir "$directory"
+					echo "${bold}Folder created.${normal}"
+					sleep 1
+					echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
+					cd "$directory"
+					ready="true"
+					valid="true"
+				elif [ "$mkdir" = "N" ];
+				then
+					# Creating directory denied
+					echo -e "\n${bold}Not creating directory script cannot continue. Aborting.${normal}"
+					sleep 1
+					exit 1;
+				else
+					echo -e "\n${red}Invalid answer.${normal}"
+				fi
+			done
+		fi
+	fi
+fi
+
+if [ "$ready" = "true" ];
+then
+	echo -e "\n${bold}Let's go!${normal}"
+	sleep 1
+	if [ "$type" = "A" ];
+	then
+		echo -e "\n${bold}Downloading audio."
+		youtube-dl -i -x -c --audio-quality 0 --audio-format mp3 --console-title -o \%\(title\)s.\%\(ext\)s "$id"
+		sleep 1
+	elif [ "$type" = "V" ];
+	then
+		echo -e "\n${bold}Downloading video."
+		youtube-dl -i -c --console-title -o \%\(title\)s.\%\(ext\)s "$id"
+		sleep 1
+	fi
+	echo -e "\nDONE! Thank you for using this script."
+	exit 1;
+fi
