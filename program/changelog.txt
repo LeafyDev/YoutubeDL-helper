@@ -1,0 +1,9 @@
+13-05-2014
+----------
+Fixed errors.
+Added quality and format selection.
+
+
+12-05-2014
+----------
+Initial release.

@@ -1,0 +1,354 @@
+#!/bin/bash
+
+# Init
+command -v youtube-dl >/dev/null 2>&1 || { echo >&2 "I require youtube-dl but it's not installedor not in PATH. Aborting."; exit 1; }
+command -v ffmpeg >/dev/null 2>&1 || { echo >&2 "I require ffmpeg but it's not installed or not in PATH. Aborting."; exit 1; }
+bold=$(tput bold)
+normal=$(tput sgr0)
+red=$(tput setf 4)
+
+# Check command args
+valid="false"
+until [ "$valid" == "true" ];
+do
+	if [ ! -z "$1" ];
+	then
+		# Using arguments to define downloads
+		id="$1"
+		check=$(youtube-dl -e --default-search auto "$id")
+		if [ "$check" == "Hypothetical Scenarios Test with Jim | Zoella" ];
+		then
+			echo "${red}Invalid ID.${normal}"
+			valid="false"
+		elif [ "$check" == "" ];
+		then
+			valid="false"
+		else
+			echo "$check"
+			echo -e "\n${bold}Using ID '$id' for downloads.${normal}"
+			sleep 1
+			valid="true"
+		fi
+	else
+		# Using custom ID
+		echo -e "\n${bold}Enter video or playlist ID: ${normal}"
+		read id
+		if [ "$id" == "" ];
+		then
+			echo -e "${red}No ID given.${normal}"
+			valid="false"
+		else
+			check=$(youtube-dl -e --default-search auto "$id")
+			if [ "$check" == "Hypothetical Scenarios Test with Jim | Zoella" ];
+			then
+				echo "${red}Invalid ID.${normal}"
+				valid="false"
+			elif [ "$check" == "" ];
+			then
+				valid="false"
+			else
+				echo -e "\n${bold}Using ID '$id' for downloads.${normal}"
+				sleep 1
+				valid="true"
+			fi
+		fi
+	fi
+done
+
+# Type
+valid="false"
+until [ "$valid" == "true" ];
+do
+	echo -e "\n${bold}Audio or Video? (A/V)${normal}"
+	read type
+	
+	if [ "$type" == "A" ] || [ "$type" == "a" ];
+	then
+		echo -e "\n${bold}Audio chosen.${normal}"
+		sleep 1
+		valid="true"
+	elif [ "$type" == "V" ] || [ "$type" == "v" ];
+	then
+		echo -e "\n${bold}Video chosen.${normal}"
+		sleep 1
+		valid="true"
+	else
+		echo -e "\n${red}Invalid answer.${normal}"
+		valid="false"
+	fi
+done
+
+# Audio
+if [ "$type" == "A" ] || [ "$type" == "a" ];
+then
+	dir=$(pwd)
+	echo -e "${bold}Enter directory to download to: (Enter for current)${normal}"
+	read directory
+	if [ "$directory" == "" ];
+	then
+		# Current directory
+		echo "${bold}Using directory '$dir' for downloads.${normal}"
+		sleep 1
+		ready="true"
+	else
+		if [ -d "$directory" ];
+		then
+			# Directory exists
+			echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
+			sleep 1
+			cd "$directory"
+			ready="true"
+		else
+			valid="false"
+			until [ "$valid" == "true" ];
+			do
+				echo -e "\n${bold}Directory '$directory' does not exist. Would you me to create it? (Y/N)${normal} "
+				read mkdir
+				if [ "$mkdir" == "Y" ] || [ "$mkdir" == "y" ];
+				then
+					# Creating directory
+					mkdir "$directory"
+					echo "${bold}Folder created.${normal}"
+					sleep 1
+					echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
+					cd "$directory"
+					ready="true"
+					valid="true"
+				elif [ "$mkdir" == "N" ] || [ "$mkdir" == "n" ];
+				then
+					# Creating directory denied
+					echo -e "\n${bold}Not creating directory script cannot continue. Aborting.${normal}"
+					sleep 1
+					exit 1;
+				else
+					echo -e "\n${red}Invalid answer.${normal}"
+				fi
+			done
+		fi
+	fi
+fi
+
+# Video
+if [ "$type" == "V" ] || [ "$type" == "v" ];
+then
+	dir=$(pwd)
+	echo -e "${bold}Enter directory to download to: (Enter for current)${normal} "
+	read directory
+	if [ "$directory" == "" ];
+	then
+		# Current directory
+		echo "${bold}Using directory '$dir' for downloads.${normal}"
+		sleep 1
+		ready="true"
+	else
+		if [ -d "$directory" ];
+		then
+			# Directory exists
+			echo "${bold}Using directory '$directory' for downloads.${normal}"
+			sleep 1
+			cd "$directory"
+			ready="true"
+		else
+			valid="false"
+			until [ "$valid" == "true" ];
+			do
+				echo -e "\n${bold}Directory '$directory' does not exist. Would you me to create it? (Y/N)${normal} "
+				read mkdir
+				if [ "$mkdir" == "Y" ] || [ "$mkdir" == "y" ];
+				then
+					# Creating directory
+					mkdir "$directory"
+					echo "${bold}Folder created.${normal}"
+					sleep 1
+					echo "${bold}Using directory '$directory' for downloads.${normal}"
+					cd "$directory"
+					ready="true"
+					valid="true"
+				elif [ "$mkdir" == "N" ] || [ "$mkdir" == "n" ];
+				then
+					# Creating directory denied
+					echo -e "\n${bold}Not creating directory script cannot continue. Aborting.${normal}"
+					sleep 1
+					exit 1;
+				else
+					echo -e "\n${red}Invalid answer.${normal}"
+				fi
+			done
+		fi
+	fi
+fi
+
+if [ "$ready" == "true" ];
+then
+	# Start
+	echo -e "\n${bold}Let's go!${normal}"
+	sleep 1
+	# Audio
+	if [ "$type" == "A" ] || [ "$type" == "a" ];
+	then
+		valid="false"
+		until [ "$valid" == "true" ];
+		do
+			echo -e "\n${bold}These formats are available: mp3 / ogg / m4a / wav. Please select the one you want: (Enter for MP3)${normal}"
+			read wantedformat
+			
+			if [ "$wantedformat" == "mp3" ] || [ "$wantedformat" == "MP3" ] || [ "$wantedformat" == "" ];
+			then
+				echo -e "\n${bold}MP3 chosen.${normal}"
+				sleep 1
+				wantedformat="mp3"
+				valid="true"
+			elif [ "$wantedformat" == "ogg" ] || [ "$wantedformat" == "OGG" ] || [ "$wantedformat" == "vorbis" ];
+			then
+				echo -e "\n${bold}OGG chosen.${normal}"
+				sleep 1
+				wantedformat="vorbis"
+				valid="true"
+			elif [ "$wantedformat" == "wav" ] || [ "$wantedformat" == "WAV" ] || [ "$wantedformat" == "wave" ];
+			then
+				echo -e "\n${bold}Wave chosen.${normal}"
+				sleep 1
+				wantedformat="wav"
+				valid="true"
+			elif [ "$wantedformat" == "m4a" ] || [ "$wantedformat" == "M4A" ];
+			then
+				echo -e "\n${bold}M4A chosen.${normal}"
+				sleep 1
+				wantedformat="m4a"
+				valid="true"
+			fi
+		done
+		
+		echo -e "\n${bold}Downloading Audio."
+		youtube-dl -i -x -c --audio-quality 0 --audio-format "$wantedformat" --console-title -o \%\(title\)s.\%\(ext\)s "$id"
+		done="true"
+		
+		# Finish !
+		echo -e "\nDONE! Thank you for using this script. In case of errors, report to vseditio@gmail.com :)"
+		sleep 1;
+		
+	# Video
+	elif [ "$type" == "V" ] || [ "$type" == "v" ];
+	then
+		size=$(youtube-dl --list-formats "$id" | grep mp4 | grep '144p\|240p\|360p\|480p\|720p\|1080p\|2160p' | grep -v '3D')
+		if [[ $size =~ 144p ]];
+		then
+			q144p="144p"
+		fi
+		if [[ $size =~ 240p ]];
+		then
+			q240p="240p"
+		fi
+		if [[ $size =~ 360p ]];
+		then
+			q360p="360p"
+		fi
+		if [[ $size =~ 480p ]];
+		then
+			q480p="480p"
+		fi
+		if [[ $size =~ 720p ]];
+		then
+			q720p="720p"
+		fi
+		if [[ $size =~ 1080p ]];
+		then
+			q1080p="1080p"
+		fi
+		if [[ $size =~ 2160p ]];
+		then
+			q2160p="2160p"
+		fi
+		
+		valid="false"
+		until [ "$valid" == "true" ];
+		do
+			echo -e "\n${bold}\n$q144p $q240p $q360p $q480p $q720p $q1080p $q2160p"
+			echo -e "\n${bold}These formats are available. Please select the one you want: (A for all formats available, experimental)${normal}"
+			read wantedsize
+			
+			if [ "$wantedsize" == "144p" ] || [ "$wantedsize" == "144" ];
+			then
+				echo -e "\n${bold}144p chosen.${normal}"
+				sleep 1
+				format="160"
+				wantedsize="144p"
+				valid="true"
+			elif [ "$wantedsize" == "240p" ] || [ "$wantedsize" == "240" ];
+			then
+				echo -e "\n${bold}240p chosen.${normal}"
+				sleep 1
+				format="133"
+				wantedsize="240p"
+				valid="true"
+			elif [ "$wantedsize" == "360p" ] || [ "$wantedsize" == "360" ];
+			then
+				echo -e "\n${bold}360p chosen.${normal}"
+				sleep 1
+				format="134"
+				wantedsize="360p"
+				valid="true"
+			elif [ "$wantedsize" == "480p" ] || [ "$wantedsize" == "480" ];
+			then
+				echo -e "\n${bold}480p chosen.${normal}"
+				sleep 1
+				format="135"
+				wantedsize="480p"
+				valid="true"
+			elif [ "$wantedsize" == "720p" ] || [ "$wantedsize" == "720" ];
+			then
+				echo -e "\n${bold}720p chosen.${normal}"
+				sleep 1
+				format="136"
+				wantedsize="720p"
+				valid="true"
+			elif [ "$wantedsize" == "1080p" ] || [ "$wantedsize" == "1080" ];
+			then
+				echo -e "\n${bold}1080p chosen.${normal}"
+				sleep 1
+				format="137"
+				wantedsize="1080p"
+				valid="true"
+			elif [ "$wantedsize" == "2160p" ] || [ "$wantedsize" == "2160" ];
+			then
+				echo -e "\n${bold}2160p chosen.${normal}"
+				sleep 1
+				format="138"
+				wantedsize="2160p"
+				valid="true"
+			elif [ "$wantedsize" == "A" ] || [ "$wantedsize" == "a" ];
+			then
+				echo -e "\n${bold}All formats chosen, prepare for total destruction!${normal}"
+				sleep 1
+				yolomode="true"
+				valid="true"
+			else
+				echo -e "\n${red}Invalid answer.${normal}"
+				valid="false"
+			fi
+		done
+		
+		if [ "$yolomode" == "true" ];
+		then
+			youtube-dl -i -c --console-title --all-formats -o \%\(title\)s-\%\(format\)s.\%\(ext\)s "$id"
+			echo -e "\nDONE! Thank you for using this script. In case of errors, report to vseditio@gmail.com :)"
+			echo -e "I'm not responsible for any disk space usage."
+			done="true"
+		fi
+		
+		if [ "$format" != "" ];
+		then
+			echo -e "\n${bold}Downloading video."
+			youtube-dl -i -c --console-title -f "$format" -o \%\(title\)s-"$wantedsize".\%\(ext\)s "$id"
+			# Finish !
+			echo -e "\nDONE! Thank you for using this script. In case of errors, report to vseditio@gmail.com :)"
+			done="true"
+		fi
+	fi
+fi
+
+if [ "$done" == "true" ];
+then
+	echo -e "\n"
+	exit 0;
+fi
