@@ -1,10 +1,8 @@
 #!/bin/bash
 
 # Init
-command -v youtube-dl >/dev/null 2>&1 || { echo >&2 "I require youtube-dl but it's not installed or not in PATH. Aborting."; exit 1; }
+command -v youtube-dl >/dev/null 2>&1 || { echo >&2 "I require youtube-dl but it's not installedor not in PATH. Aborting."; exit 1; }
 command -v ffmpeg >/dev/null 2>&1 || { echo >&2 "I require ffmpeg but it's not installed or not in PATH. Aborting."; exit 1; }
-command -v ffprobe >/dev/null 2>&1 || { echo >&2 "I require ffprobe but it's not installed or not in PATH. Audio conversion will not work. Aborting."; exit 1; }
-
 bold=$(tput bold)
 normal=$(tput sgr0)
 red=$(tput setf 4)
@@ -15,113 +13,45 @@ until [ "$valid" == "true" ];
 do
 	if [ ! -z "$1" ];
 	then
-	    # Check if $1 should be $2
-	    if [ "$1" == "A" ] || [ "$1" == "a" ] || [ "$1" == "V" ] || [ "$1" == "v" ];
-	    then
-	        argtype="$1"
-	    fi
-	    
-	    # Correcting $2
-    	if [ ! -z "$2" ];
-	    then
-            if [ "${#2}" -gt 1 ];
-            then
-                until [ "$ok" == "true" ];
-                do
-                    echo -e "\n${red}Second argument was too long to be a valid type. Please correct it: (A/V)${normal}"
-                    read correcttype
-                    if [ "$correcttype" == "A" ] || [ "$correcttype" == "a" ];
-                	then
-                		echo -e "\n${bold}Audio chosen.${normal}"
-                		sleep 1
-                		type="A"
-                		ok="true"
-                	elif [ "$correcttype" == "V" ] || [ "$correcttype" == "v" ];
-                	then
-                		echo -e "\n${bold}Video chosen.${normal}"
-                		sleep 1
-                		type="V"
-                		ok="true"
-                	else
-                		echo -e "\n${red}Invalid answer.${normal}"
-                		ok="false"
-            	    fi
-                done
-            fi
-            if [ "$2" != "A" ] || [ "$2" != "a" ] || [ "$2" != "V" ] || [ "$2" != "v" ];
-            then
-                until [ "$ok" == "true" ];
-                do
-                    echo -e "\n${red}Second argument was an invalid type. Please correct it: (A/V)${normal}"
-                    read correcttype
-                    if [ "$correcttype" == "A" ] || [ "$correcttype" == "a" ];
-                	then
-                		echo -e "\n${bold}Audio chosen.${normal}"
-                		sleep 1
-                		type="A"
-                		ok="true"
-                	elif [ "$correcttype" == "V" ] || [ "$correcttype" == "v" ];
-                	then
-                		echo -e "\n${bold}Video chosen.${normal}"
-                		sleep 1
-                		type="V"
-                		ok="true"
-                	else
-                		echo -e "\n${red}Invalid answer.${normal}"
-                		ok="false"
-            	    fi
-                done
-            fi
-	    fi
-	    
-        if [ "$argtype" == "" ];
-	    then
-    		# Using arguments to define downloads
-    		id="$1"
-    		check=$(youtube-dl -e --default-search auto "$id")
-    		if [ "$check" == "Hypothetical Scenarios Test with Jim | Zoella" ];
-    		then
-    			echo "${red}Invalid ID.${normal}"
-    			valid="false"
-    		elif [ "$check" == "" ];
-    		then
-    		    # Youtube-DL handles the error message.
-    			valid="false"
-    		else
-    			echo "$check"
-    			echo -e "\n${bold}Using ID '$id' for downloads.${normal}"
-    			sleep 1
-    			ok="true"
-    			valid="true"
-    		fi
-    	fi
-    	
-    	if [ "$ok" != "true" ];
-    	then
-        	# Using custom ID
-    		echo -e "\n${bold}Enter video or playlist ID: ${normal}"
-    		read id
-    		if [ "$id" == "" ];
-    		then
-    			echo -e "${red}No ID given.${normal}"
-    			valid="false"
-    		else
-    			check=$(youtube-dl -e --default-search auto "$id")
-    			if [ "$check" == "Hypothetical Scenarios Test with Jim | Zoella" ];
-    			then
-    				echo "${red}Invalid ID.${normal}"
-    				valid="false"
-    			elif [ "$check" == "" ];
-    			then
-    				valid="false"
-    			else
-    			    echo "$check"
-    				echo -e "\n${bold}Using ID '$id' for downloads.${normal}"
-    				sleep 1
-    				valid="true"
-    			fi
-    		fi
-    	fi
+		# Using arguments to define downloads
+		id="$1"
+		check=$(youtube-dl -e --default-search auto "$id")
+		if [ "$check" == "Hypothetical Scenarios Test with Jim | Zoella" ];
+		then
+			echo "${red}Invalid ID.${normal}"
+			valid="false"
+		elif [ "$check" == "" ];
+		then
+			valid="false"
+		else
+			echo "$check"
+			echo -e "\n${bold}Using ID '$id' for downloads.${normal}"
+			sleep 1
+			valid="true"
+		fi
+	else
+		# Using custom ID
+		echo -e "\n${bold}Enter video or playlist ID: ${normal}"
+		read id
+		if [ "$id" == "" ];
+		then
+			echo -e "${red}No ID given.${normal}"
+			valid="false"
+		else
+			check=$(youtube-dl -e --default-search auto "$id")
+			if [ "$check" == "Hypothetical Scenarios Test with Jim | Zoella" ];
+			then
+				echo "${red}Invalid ID.${normal}"
+				valid="false"
+			elif [ "$check" == "" ];
+			then
+				valid="false"
+			else
+				echo -e "\n${bold}Using ID '$id' for downloads.${normal}"
+				sleep 1
+				valid="true"
+			fi
+		fi
 	fi
 done
 
@@ -129,61 +59,23 @@ done
 valid="false"
 until [ "$valid" == "true" ];
 do
-    # Get type by arguments
-    if [ ! -z "$2" ] || [ "$argtype" != "" ] || [ "$correcttype" != "" ];
-	then
-	    if [ "$argtype" == "A" ] || [ "$argtype" == "a" ];
-	    then
-	        echo -e "\n${bold}Audio chosen by command line arguments.${normal}"
-		    sleep 1
-		    type="A"
-		    valid="true"
-	    elif [ "$argtype" == "V" ] || [ "$argtype" == "v" ];
-	    then
-	        echo -e "\n${bold}Video chosen by command line arguments.${normal}"
-		    sleep 1
-		    type="V"
-		    valid="true"
-	    fi
-	fi
+	echo -e "\n${bold}Audio or Video? (A/V)${normal}"
+	read type
 	
-	if [ "$valid" != "true" ];
+	if [ "$type" == "A" ] || [ "$type" == "a" ];
 	then
-	    if [ "$type" == "" ];
-	    then
-        	echo -e "\n${bold}Audio or Video? (A/V)${normal}"
-        	read type
-        	if [ "$type" == "A" ] || [ "$type" == "a" ];
-            then
-            	echo -e "\n${bold}Audio chosen.${normal}"
-            	sleep 1
-            	valid="true"
-            elif [ "$type" == "V" ] || [ "$type" == "v" ];
-            then
-            	echo -e "\n${bold}Video chosen.${normal}"
-            	sleep 1
-            	valid="true"
-            else
-            	echo -e "\n${red}Invalid answer.${normal}"
-            	valid="false"
-            fi
-    	else
-        	if [ "$type" == "A" ] || [ "$type" == "a" ];
-        	then
-        		echo -e "\n${bold}Audio chosen by command line arguments.${normal}"
-        		sleep 1
-        		valid="true"
-        	elif [ "$type" == "V" ] || [ "$type" == "v" ];
-        	then
-        		echo -e "\n${bold}Video chosen by command line arguments.${normal}"
-        		sleep 1
-        		valid="true"
-        	else
-        		echo -e "\n${red}Invalid answer.${normal}"
-        		valid="false"
-        	fi
-        fi
-    fi
+		echo -e "\n${bold}Audio chosen.${normal}"
+		sleep 1
+		valid="true"
+	elif [ "$type" == "V" ] || [ "$type" == "v" ];
+	then
+		echo -e "\n${bold}Video chosen.${normal}"
+		sleep 1
+		valid="true"
+	else
+		echo -e "\n${red}Invalid answer.${normal}"
+		valid="false"
+	fi
 done
 
 # Audio
@@ -252,7 +144,7 @@ then
 		if [ -d "$directory" ];
 		then
 			# Directory exists
-			echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
+			echo "${bold}Using directory '$directory' for downloads.${normal}"
 			sleep 1
 			cd "$directory"
 			ready="true"
@@ -268,7 +160,7 @@ then
 					mkdir "$directory"
 					echo "${bold}Folder created.${normal}"
 					sleep 1
-					echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
+					echo "${bold}Using directory '$directory' for downloads.${normal}"
 					cd "$directory"
 					ready="true"
 					valid="true"

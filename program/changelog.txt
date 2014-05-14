@@ -1,3 +1,9 @@
+14-05-2014
+----------
+Added type selection from arguments. (Usage: ytdl [id] [A/V]).
+Added argument mix-up prevention (Inverting [id] and [A/V]).
+Added type argument correction (Typo, length).
+
 13-05-2014
 ----------
 Fixed errors.
