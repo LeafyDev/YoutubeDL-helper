@@ -19,7 +19,10 @@ do
 	    if [ "$1" == "A" ] || [ "$1" == "a" ] || [ "$1" == "V" ] || [ "$1" == "v" ];
 	    then
 	        argtype="$1"
-	    fi
+	        id="$2"
+	    else
+	        id="$1"
+        fi
 	    
 	    # Correcting $2
     	if [ ! -z "$2" ];
@@ -28,30 +31,39 @@ do
             then
                 until [ "$ok" == "true" ];
                 do
-                    echo -e "\n${red}Second argument was too long to be a valid type. Please correct it: (A/V)${normal}"
-                    read correcttype
-                    if [ "$correcttype" == "A" ] || [ "$correcttype" == "a" ];
-                	then
-                		echo -e "\n${bold}Audio chosen.${normal}"
-                		sleep 1
-                		type="A"
-                		ok="true"
-                	elif [ "$correcttype" == "V" ] || [ "$correcttype" == "v" ];
-                	then
-                		echo -e "\n${bold}Video chosen.${normal}"
-                		sleep 1
-                		type="V"
-                		ok="true"
-                	else
-                		echo -e "\n${red}Invalid answer.${normal}"
-                		ok="false"
-            	    fi
+                    if [ "$id" == "" ];
+                    then
+                        echo -e "\n${red}Second argument was too long to be a valid type. Please correct it: (A/V)${normal}"
+                        read correcttype
+                        if [ "$correcttype" == "A" ] || [ "$correcttype" == "a" ];
+                    	then
+                    		echo -e "\n${bold}Audio chosen.${normal}"
+                    		sleep 1
+                    		type="A"
+                    		ok="true"
+                    	elif [ "$correcttype" == "V" ] || [ "$correcttype" == "v" ];
+                    	then
+                    		echo -e "\n${bold}Video chosen.${normal}"
+                    		sleep 1
+                    		type="V"
+                    		ok="true"
+                    	else
+                    		echo -e "\n${red}Invalid answer.${normal}"
+                    		ok="false"
+                	    fi
+                    else
+                        ok="true"
+                    fi
                 done
             fi
-            if [ "$2" != "A" ] || [ "$2" != "a" ] || [ "$2" != "V" ] || [ "$2" != "v" ];
-            then
-                until [ "$ok" == "true" ];
-                do
+            
+            if [ "$2" == "A" ] || [ "$2" == "a" ] || [ "$2" == "V" ] || [ "$2" == "v" ];
+    	    then
+    	        argtype="$2"
+    	        ok="true"
+    	    else
+    	        until [ "$ok" == "true" ];
+    	        do
                     echo -e "\n${red}Second argument was an invalid type. Please correct it: (A/V)${normal}"
                     read correcttype
                     if [ "$correcttype" == "A" ] || [ "$correcttype" == "a" ];
@@ -74,10 +86,9 @@ do
             fi
 	    fi
 	    
-        if [ "$argtype" == "" ];
+        if [ "$argtype" != "" ];
 	    then
     		# Using arguments to define downloads
-    		id="$1"
     		check=$(youtube-dl -e --default-search auto "$id")
     		if [ "$check" == "Hypothetical Scenarios Test with Jim | Zoella" ];
     		then
