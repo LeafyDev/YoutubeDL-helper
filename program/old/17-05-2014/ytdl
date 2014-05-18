@@ -198,130 +198,103 @@ do
 done
 
 # Audio
-valid="false"
 if [ "$type" == "A" ] || [ "$type" == "a" ];
 then
-    if [ ! -z "$3" ];
-    then
-        if [ "$3" == "." ];
-        then
-            echo "${bold}Using current directory, defined by command line arguments.${normal}"
-            valid="true"
-            ready="true"
-        fi
-    fi
-    
-    if [ "$valid" == "false" ];
-    then
-    	dir=$(pwd)
-    	echo -e "${bold}Enter directory to download to: (Enter for current)${normal}"
-    	read directory
-    	if [ "$directory" == "" ];
-    	then
-    		# Current directory
-    		echo "${bold}Using directory '$dir' for downloads.${normal}"
-    		sleep 1
-    		ready="true"
-    	else
-    		if [ -d "$directory" ];
-    		then
-    			# Directory exists
-    			echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
-    			sleep 1
-    			cd "$directory"
-    			ready="true"
-    		else
-    			valid="false"
-    			until [ "$valid" == "true" ];
-    			do
-    				echo -e "\n${bold}Directory '$directory' does not exist. Would you me to create it? (Y/N)${normal} "
-    				read mkdir
-    				if [ "$mkdir" == "Y" ] || [ "$mkdir" == "y" ];
-    				then
-    					# Creating directory
-    					mkdir "$directory"
-    					echo "${bold}Folder created.${normal}"
-    					sleep 1
-    					echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
-    					cd "$directory"
-    					ready="true"
-    					valid="true"
-    				elif [ "$mkdir" == "N" ] || [ "$mkdir" == "n" ];
-    				then
-    					# Creating directory denied
-    					echo -e "\n${bold}Not creating directory script cannot continue. Aborting.${normal}"
-    					sleep 1
-    					exit 1;
-    				else
-    					echo -e "\n${red}Invalid answer.${normal}"
-    				fi
-    			done
-    		fi
-    	fi
-    fi
+	dir=$(pwd)
+	echo -e "${bold}Enter directory to download to: (Enter for current)${normal}"
+	read directory
+	if [ "$directory" == "" ];
+	then
+		# Current directory
+		echo "${bold}Using directory '$dir' for downloads.${normal}"
+		sleep 1
+		ready="true"
+	else
+		if [ -d "$directory" ];
+		then
+			# Directory exists
+			echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
+			sleep 1
+			cd "$directory"
+			ready="true"
+		else
+			valid="false"
+			until [ "$valid" == "true" ];
+			do
+				echo -e "\n${bold}Directory '$directory' does not exist. Would you me to create it? (Y/N)${normal} "
+				read mkdir
+				if [ "$mkdir" == "Y" ] || [ "$mkdir" == "y" ];
+				then
+					# Creating directory
+					mkdir "$directory"
+					echo "${bold}Folder created.${normal}"
+					sleep 1
+					echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
+					cd "$directory"
+					ready="true"
+					valid="true"
+				elif [ "$mkdir" == "N" ] || [ "$mkdir" == "n" ];
+				then
+					# Creating directory denied
+					echo -e "\n${bold}Not creating directory script cannot continue. Aborting.${normal}"
+					sleep 1
+					exit 1;
+				else
+					echo -e "\n${red}Invalid answer.${normal}"
+				fi
+			done
+		fi
+	fi
 fi
 
 # Video
-valid="false"
 if [ "$type" == "V" ] || [ "$type" == "v" ];
 then
-    if [ ! -z "$3" ];
-    then
-        if [ "$3" == "." ];
-        then
-            echo "${bold}Using current directory, defined by command line arguments.${normal}"
-            valid="true"
-            ready="true"
-        fi
-    fi
-    if [ "$valid" == "false" ];
-    then
-    	dir=$(pwd)
-    	echo -e "${bold}Enter directory to download to: (Enter for current)${normal} "
-    	read directory
-    	if [ "$directory" == "" ];
-    	then
-    		# Current directory
-    		echo "${bold}Using directory '$dir' for downloads.${normal}"
-    		sleep 1
-    		ready="true"
-    	else
-    		if [ -d "$directory" ];
-    		then
-    			# Directory exists
-    			echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
-    			sleep 1
-    			cd "$directory"
-    			ready="true"
-    		else
-    			valid="false"
-    			until [ "$valid" == "true" ];
-    			do
-    				echo -e "\n${bold}Directory '$directory' does not exist. Would you me to create it? (Y/N)${normal} "
-    				read mkdir
-    				if [ "$mkdir" == "Y" ] || [ "$mkdir" == "y" ];
-    				then
-    					# Creating directory
-    					mkdir "$directory"
-    					echo "${bold}Folder created.${normal}"
-    					sleep 1
-    					echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
-    					cd "$directory"
-    					ready="true"
-    					valid="true"
-    				elif [ "$mkdir" == "N" ] || [ "$mkdir" == "n" ];
-    				then
-    					# Creating directory denied
-    					echo -e "\n${bold}Not creating directory script cannot continue. Aborting.${normal}"
-    					sleep 1
-    					exit 1;
-    				else
-    					echo -e "\n${red}Invalid answer.${normal}"
-    				fi
-    			done
-    		fi
-    	fi
-    fi
+	dir=$(pwd)
+	echo -e "${bold}Enter directory to download to: (Enter for current)${normal} "
+	read directory
+	if [ "$directory" == "" ];
+	then
+		# Current directory
+		echo "${bold}Using directory '$dir' for downloads.${normal}"
+		sleep 1
+		ready="true"
+	else
+		if [ -d "$directory" ];
+		then
+			# Directory exists
+			echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
+			sleep 1
+			cd "$directory"
+			ready="true"
+		else
+			valid="false"
+			until [ "$valid" == "true" ];
+			do
+				echo -e "\n${bold}Directory '$directory' does not exist. Would you me to create it? (Y/N)${normal} "
+				read mkdir
+				if [ "$mkdir" == "Y" ] || [ "$mkdir" == "y" ];
+				then
+					# Creating directory
+					mkdir "$directory"
+					echo "${bold}Folder created.${normal}"
+					sleep 1
+					echo "${bold}Using directory '$dir/$directory' for downloads.${normal}"
+					cd "$directory"
+					ready="true"
+					valid="true"
+				elif [ "$mkdir" == "N" ] || [ "$mkdir" == "n" ];
+				then
+					# Creating directory denied
+					echo -e "\n${bold}Not creating directory script cannot continue. Aborting.${normal}"
+					sleep 1
+					exit 1;
+				else
+					echo -e "\n${red}Invalid answer.${normal}"
+				fi
+			done
+		fi
+	fi
 fi
 
 if [ "$ready" == "true" ];

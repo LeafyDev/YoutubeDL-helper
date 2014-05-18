@@ -6,7 +6,7 @@ I simply made a sort of simple front-end.
 Usage:
 - Requires installation of youtube-dl (see site above).
 - (Optional) Add the script to your $PATH.
-- ytdl [youtube playlist or video ID]
+- ytdl [youtube playlist or video ID] [A/V] [.]
 
 If no ID is given, it will prompt when the tool starts.
 

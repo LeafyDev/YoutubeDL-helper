@@ -1,7 +1,3 @@
-18-05-2014
-----------
-Added possibility to use current folder via command line arguments. (Usage: ytdl [id] [A/V] [.])
-
 17-05-2014
 ----------
 Bugfixes.
