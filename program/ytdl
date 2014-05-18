@@ -95,33 +95,33 @@ do
     			valid="true"
     		fi
     	fi
-    	
-    	if [ "$ok" != "true" ];
-    	then
-        	# Using custom ID
-    		echo -e "\n${bold}Enter video or playlist ID: ${normal}"
-    		read id
-    		if [ "$id" == "" ];
-    		then
-    			echo -e "${red}No ID given.${normal}"
-    			valid="false"
-    		else
-    			check=$(youtube-dl -e --default-search auto "$id")
-    			if [ "$check" == "Hypothetical Scenarios Test with Jim | Zoella" ];
-    			then
-    				echo "${red}Invalid ID.${normal}"
-    				valid="false"
-    			elif [ "$check" == "" ];
-    			then
-    				valid="false"
-    			else
-    			    echo "$check"
-    				echo -e "\n${bold}Using ID '$id' for downloads.${normal}"
-    				sleep 1
-    				valid="true"
-    			fi
-    		fi
-    	fi
+    fi
+    
+	if [ "$ok" != "true" ];
+	then
+    	# Using custom ID
+		echo -e "\n${bold}Enter video or playlist ID: ${normal}"
+		read id
+		if [ "$id" == "" ];
+		then
+			echo -e "${red}No ID given.${normal}"
+			valid="false"
+		else
+			check=$(youtube-dl -e --default-search auto "$id")
+			if [ "$check" == "Hypothetical Scenarios Test with Jim | Zoella" ];
+			then
+				echo "${red}Invalid ID.${normal}"
+				valid="false"
+			elif [ "$check" == "" ];
+			then
+				valid="false"
+			else
+			    echo "$check"
+				echo -e "\n${bold}Using ID '$id' for downloads.${normal}"
+				sleep 1
+				valid="true"
+			fi
+		fi
 	fi
 done
 
